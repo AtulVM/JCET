@@ -6,7 +6,7 @@ const TodoList = () => {
   const [todoText, setTodoText] = useState('');
 
   const addTodo = () => {
-    if (todoText.trim() !== '') {
+    if (todoText.trim().length > 0) {
       setTodos([...todos, { text: todoText, checked: false }]);
       setTodoText('');
     }
@@ -27,12 +27,14 @@ const TodoList = () => {
   const renderTodoItem = ({ item, index }) => (
     <View style={styles.todoItem}>
       <TouchableOpacity onPress={() => toggleTodo(index)}>
-        <Text style={styles.toggleButton}>{item.checked ? 'Uncheck' : 'Check'}</Text>
+        <Text style={[styles.todoText, item.checked && styles.checkedTodoText]}>
+          {item.text}
+        </Text>
       </TouchableOpacity>
-      <Text style={[styles.todoText, item.checked && styles.checkedTodoText]}>
-        {item.text}
-      </Text>
-      <TouchableOpacity onPress={() => deleteTodo(index)}>
+      <TouchableOpacity
+        onPress={() => deleteTodo(index)}
+        style={styles.deleteButtonContainer}
+      >
         <Text style={styles.deleteButton}>Delete</Text>
       </TouchableOpacity>
     </View>
@@ -83,24 +85,28 @@ const styles = StyleSheet.create({
   },
   todoItem: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start', // Align items to the start of the container
     marginBottom: 5,
   },
-  todoText: {
+  todoTextContainer: {
     flex: 1,
     marginRight: 10,
+  },
+  todoText: {
+    textDecorationLine: 'none',
   },
   checkedTodoText: {
     textDecorationLine: 'line-through',
     color: 'gray',
   },
-  deleteButton: {
-    color: 'red',
+  deleteButtonContainer: {
+    marginLeft: 'auto',
     marginRight: 10,
   },
-  toggleButton: {
-    color: 'green',
+  deleteButton: {
+    color: 'red',
   },
 });
+
 
 export default TodoList;
