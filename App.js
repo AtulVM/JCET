@@ -4,13 +4,15 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import TodoList from './pages/To_do_list';
+import Login from './pages/Login';
 
 const Stack = createStackNavigator();
 
 const App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator initialRouteName="Login" headerMode="none">
+        <Stack.Screen name="Login" component={Login} />
         <Stack.Screen
           name="Home"
           component={HomeScreen}
