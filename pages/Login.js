@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Button } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Button, KeyboardAvoidingView } from 'react-native';
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { FIREBASE_AUTH } from '../FirebaseConfig';
@@ -15,7 +15,6 @@ const Login = () => {
         console.log("FIREBASE_AUTH:", FIREBASE_AUTH);
 
         const response = await signInWithEmailAndPassword(auth, email, password);
-        sign
         console.log(response);
     }   catch(error){
         console.log(error);
@@ -40,6 +39,7 @@ const Login = () => {
   }
   return (
     <View style={styles.container}>
+    <KeyboardAvoidingView behavior='padding'>
       <TextInput
         value={email}
         style={styles.input}
@@ -61,6 +61,7 @@ const Login = () => {
       < Button title='Create Account' onPress={() => signUp()} />
       </>
       }
+      </KeyboardAvoidingView>
     </View>
   );
 };
