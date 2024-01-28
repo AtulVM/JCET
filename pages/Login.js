@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Button } from 'react-native';
 import React, { useState } from 'react';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { FIREBASE_AUTH } from '../FirebaseConfig';
 
 const Login = () => {
@@ -13,7 +14,7 @@ const Login = () => {
     try{
         console.log("FIREBASE_AUTH:", FIREBASE_AUTH);
 
-        const response = await auth.signInWithEmailAndPassword(auth, email, password);
+        const response = await signInWithEmailAndPassword(auth, email, password);
         sign
         console.log(response);
     }   catch(error){
@@ -27,7 +28,7 @@ const Login = () => {
   const signUp = async () => {
     setLoading(true);
     try{
-        const response = await auth.createUserWithEmailAndPassword(auth, email, password);
+        const response = await createUserWithEmailAndPassword(auth, email, password);
         console.log(response);
         alert('Check Your Emails!');
     }   catch(error){
@@ -63,7 +64,6 @@ const Login = () => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
