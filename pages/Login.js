@@ -1,21 +1,30 @@
+// Login.js
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Button, KeyboardAvoidingView } from 'react-native';
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { FIREBASE_AUTH } from '../FirebaseConfig';
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation
+import { CommonActions } from '@react-navigation/native';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const auth = FIREBASE_AUTH;
+  const navigation = useNavigation(); // Get the navigation object
 
   const signIn = async () => {
     setLoading(true);
     try{
-        console.log("FIREBASE_AUTH:", FIREBASE_AUTH);
-
+        
         const response = await signInWithEmailAndPassword(auth, email, password);
         console.log(response);
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: 'Home' }],
+          })
+        ); // Navigate to Home after successful login
     }   catch(error){
         console.log(error);
         alert('Sign in failed: ' + error.message)
