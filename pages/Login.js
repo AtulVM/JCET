@@ -64,16 +64,21 @@ const Login = () => {
         autoCapitalize="none"
         onChangeText={(text) => setPassword(text)}
       />
-      { loading ? <ActivityIndicator size="large" color="00f" />
+      { loading ? <ActivityIndicator size="large" color="blue" />
       : <>
-      < Button title='Login' onPress={() => signIn()} />
-      < Button title='Create Account' onPress={() => signUp()} />
+      <TouchableOpacity style={styles.button} onPress={() => signIn()}>
+        <Text style={styles.buttonText}>Login</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={() => signUp()}>
+        <Text style={styles.buttonText}>Create Account</Text>
+      </TouchableOpacity>
       </>
       }
       </KeyboardAvoidingView>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -89,6 +94,18 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#fff',
     width: 200, // Set a width to avoid overflow
+  },
+  button: {
+    backgroundColor: '#3a58c2',
+    padding: 10,
+    borderRadius: 5,
+    marginVertical: 10, // Add some vertical margin
+    width: 200, // Match the width of the inputs
+    alignItems: 'center', // Center the text
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
 
