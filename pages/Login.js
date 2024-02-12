@@ -15,65 +15,65 @@ const Login = () => {
 
   const signIn = async () => {
     setLoading(true);
-    try{
-        
-        const response = await signInWithEmailAndPassword(auth, email, password);
-        console.log(response);
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{ name: 'Home' }],
-          })
-        ); // Navigate to Home after successful login
-    }   catch(error){
-        console.log(error);
-        alert('Sign in failed: ' + error.message)
-    }   finally {
-        setLoading(false);
+    try {
+
+      const response = await signInWithEmailAndPassword(auth, email, password);
+      console.log(response);
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: 'Home' }],
+        })
+      ); // Navigate to Home after successful login
+    } catch (error) {
+      console.log(error);
+      alert('Sign in failed: ' + error.message)
+    } finally {
+      setLoading(false);
     }
   }
 
   const signUp = async () => {
     setLoading(true);
-    try{
-        const response = await createUserWithEmailAndPassword(auth, email, password);
-        console.log(response);
-        alert('Check Your Emails!');
-    }   catch(error){
-        console.log(error);
-        alert('Sign in failed: ' + error.message)
-    }   finally {
-        setLoading(false);
+    try {
+      const response = await createUserWithEmailAndPassword(auth, email, password);
+      console.log(response);
+      alert('Check Your Emails!');
+    } catch (error) {
+      console.log(error);
+      alert('Sign in failed: ' + error.message)
+    } finally {
+      setLoading(false);
     }
   }
   return (
     <View style={styles.container}>
-    <KeyboardAvoidingView behavior='padding'>
-      <TextInput
-        value={email}
-        style={styles.input}
-        placeholder="Email"
-        autoCapitalize="none"
-        onChangeText={(text) => setEmail(text)}
-      />
-      <TextInput
-        secureTextEntry={true}
-        value={password}
-        style={styles.input}
-        placeholder="Password"
-        autoCapitalize="none"
-        onChangeText={(text) => setPassword(text)}
-      />
-      { loading ? <ActivityIndicator size="large" color="blue" />
-      : <>
-      <TouchableOpacity style={styles.button} onPress={() => signIn()}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={() => signUp()}>
-        <Text style={styles.buttonText}>Create Account</Text>
-      </TouchableOpacity>
-      </>
-      }
+      <KeyboardAvoidingView behavior='padding'>
+        <TextInput
+          value={email}
+          style={styles.input}
+          placeholder="Email"
+          autoCapitalize="none"
+          onChangeText={(text) => setEmail(text)}
+        />
+        <TextInput
+          secureTextEntry={true}
+          value={password}
+          style={styles.input}
+          placeholder="Password"
+          autoCapitalize="none"
+          onChangeText={(text) => setPassword(text)}
+        />
+        {loading ? <ActivityIndicator size="large" color="blue" />
+          : <>
+            <TouchableOpacity style={styles.button} onPress={() => signIn()}>
+              <Text style={styles.buttonText}>Login</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => signUp()}>
+              <Text style={styles.buttonText}>Create Account</Text>
+            </TouchableOpacity>
+          </>
+        }
       </KeyboardAvoidingView>
     </View>
   );
