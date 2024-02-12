@@ -47,7 +47,7 @@ const TodoList = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.backButton}>&#60;</Text>
+          <Text style={styles.backButton}>Back</Text>
         </TouchableOpacity>
         <Text style={styles.title}>Todo List</Text>
       </View>
@@ -86,8 +86,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     marginRight: 10,
-    fontSize: 32,
-    color: 'black',
+    color: '#3a58c2',
   },
   title: {
     fontSize: 24,

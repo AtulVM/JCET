@@ -21,6 +21,21 @@ const Home = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+          <Text style={styles.backButton}>Back</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>JCET COMPANION</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Details')}>
+          <Text style={styles.aboutButton}>About</Text>
+        </TouchableOpacity>
+      </View>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('FeePayment')}>
+        <Text style={styles.buttonText}>Fee Payment</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Calendar')}>
+        <Text style={styles.buttonText}>Calendar</Text>
+      </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('TodoList')}>
         <Text style={styles.buttonText}>TodoList</Text>
       </TouchableOpacity>
@@ -37,13 +52,28 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between', // Add this line
+    alignItems: 'center',
+    marginBottom: 20,
+    width: '100%', // Add this line
+    paddingHorizontal: 10, // Add this line
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  aboutButton: {
+    color: '#3a58c2',
+  },
   button: {
     backgroundColor: '#3a58c2',
     padding: 10,
     borderRadius: 5,
-    marginVertical: 10, // Add some vertical margin
-    width: 200, // Set a width for the buttons
-    alignItems: 'center', // Center the text
+    marginVertical: 10,
+    width: 200,
+    alignItems: 'center',
   },
   buttonText: {
     color: 'white',
