@@ -26,10 +26,10 @@ const CalendarPage = ({ navigation }) => {
 
   const handleAddEvent = () => {
     if (selectedDate && eventText) {
-      ssetMarkedDates({
-  ...markedDates,
-  [selectedDate]: { selected: true, marked: true, note: eventText },
-});
+      setMarkedDates({
+        ...markedDates,
+        [selectedDate]: { selected: true, marked: true, note: eventText },
+      });
       setEventText('');
     }
   };

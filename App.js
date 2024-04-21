@@ -1,4 +1,4 @@
-
+// App.js
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
@@ -10,6 +10,10 @@ import Home from './pages/Home'; // Import the Home component
 import Calendar from './pages/Calendar';
 import FeePayment from './pages/FeePayment';
 import Details from './pages/Details';
+import Announcements from './pages/Announcements'; // Import the Announcements component
+import LeaveNotifier from './pages/LeaveNotifier'; // Import the LeaveNotifier component
+import Library from './pages/Library'; // Import the Library component
+import Assignments from './pages/Assignments'; // Import the Assignments component
 
 const Stack = createStackNavigator();
 
@@ -18,11 +22,11 @@ const App = () => {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen
-          name="Home"
-          component={Home} // Use the imported Home component
-          options={{ title: 'JCET COMPANION' }}
-        />
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Announcements" component={Announcements} />
+        <Stack.Screen name="LeaveNotifier" component={LeaveNotifier} />
+        <Stack.Screen name="Library" component={Library} />
+        <Stack.Screen name="Assignments" component={Assignments} />
         <Stack.Screen name="TodoList" component={TodoList} />
         <Stack.Screen name="Calendar" component={Calendar} />
         <Stack.Screen name="FeePayment" component={FeePayment} />
@@ -31,6 +35,5 @@ const App = () => {
     </NavigationContainer>
   );
 };
-
 
 export default App;
