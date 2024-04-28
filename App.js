@@ -6,14 +6,17 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import TodoList from './pages/To_do_list';
 import Login from './pages/Login';
-import Home from './pages/Home'; // Import the Home component
+import Home from './pages/Home'; 
 import Calendar from './pages/Calendar';
 import FeePayment from './pages/FeePayment';
 import Details from './pages/Details';
-import Announcements from './pages/Announcements'; // Import the Announcements component
-import LeaveNotifier from './pages/LeaveNotifier'; // Import the LeaveNotifier component
-import Library from './pages/Library'; // Import the Library component
-import Assignments from './pages/Assignments'; // Import the Assignments component
+import Announcements from './pages/Announcements'; 
+import LeaveNotifier from './pages/LeaveNotifier'; 
+import Library from './pages/Library'; 
+import Assignments from './pages/Assignments'; 
+import S_Profile from './pages/S_profile';
+import RoleSelection from './pages/RoleSelection';
+import TeacherHome from './pages/TeacherHome';
 
 const Stack = createStackNavigator();
 
@@ -31,6 +34,9 @@ const App = () => {
         <Stack.Screen name="Calendar" component={Calendar} />
         <Stack.Screen name="FeePayment" component={FeePayment} />
         <Stack.Screen name="Details" component={Details} />
+        <Stack.Screen name="S_profile" component={S_Profile} />
+        <Stack.Screen name="RoleSelection" component={RoleSelection} />
+        <Stack.Screen name="TeacherHome" component={TeacherHome} />
       </Stack.Navigator>
     </NavigationContainer>
   );

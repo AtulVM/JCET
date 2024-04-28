@@ -1,22 +1,22 @@
 // Login.js
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Button, KeyboardAvoidingView } from 'react-native';
 import React, { useState } from 'react';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { FIREBASE_AUTH } from '../FirebaseConfig';
-import { useNavigation } from '@react-navigation/native'; // Import useNavigation
+import { FIREBASE_AUTH } from '../FirebaseConfig'; // Import your Firebase Auth reference
+import { useNavigation } from '@react-navigation/native'; 
 import { CommonActions } from '@react-navigation/native';
-
+import Icon from 'react-native-vector-icons/FontAwesome'; // Import the Icon component
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [registered, setRegistered] = useState(false);
   const auth = FIREBASE_AUTH;
   const navigation = useNavigation(); // Get the navigation object
 
   const signIn = async () => {
     setLoading(true);
     try {
-
       const response = await signInWithEmailAndPassword(auth, email, password);
       console.log(response);
       navigation.dispatch(
@@ -24,57 +24,68 @@ const Login = () => {
           index: 0,
           routes: [{ name: 'Home' }],
         })
-      ); // Navigate to Home after successful login
+      ); 
     } catch (error) {
       console.log(error);
-      alert('Sign in failed: ' + error.message)
+      alert('Sign in failed: ' + error.message);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   const signUp = async () => {
     setLoading(true);
     try {
       const response = await createUserWithEmailAndPassword(auth, email, password);
       console.log(response);
-      alert('Check Your Emails!');
+      setRegistered(true); // Set registered to true upon successful registration
+      setTimeout(() => {
+        navigation.navigate('RoleSelection');
+      }, 2000); // Navigate to RoleSelection after 2 seconds
     } catch (error) {
       console.log(error);
-      alert('Sign in failed: ' + error.message)
+      alert('Registration failed: ' + error.message);
     } finally {
       setLoading(false);
     }
-  }
+  };
+
   return (
     <View style={styles.container}>
-      <KeyboardAvoidingView behavior='padding'>
-        <TextInput
-          value={email}
-          style={styles.input}
-          placeholder="Email"
-          autoCapitalize="none"
-          onChangeText={(text) => setEmail(text)}
-        />
-        <TextInput
-          secureTextEntry={true}
-          value={password}
-          style={styles.input}
-          placeholder="Password"
-          autoCapitalize="none"
-          onChangeText={(text) => setPassword(text)}
-        />
-        {loading ? <ActivityIndicator size="large" color="blue" />
-          : <>
-            <TouchableOpacity style={styles.button} onPress={() => signIn()}>
-              <Text style={styles.buttonText}>Login</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => signUp()}>
-              <Text style={styles.buttonText}>Create Account</Text>
-            </TouchableOpacity>
-          </>
-        }
-      </KeyboardAvoidingView>
+      <TextInput
+        value={email}
+        style={styles.input}
+        placeholder="Email"
+        autoCapitalize="none"
+        onChangeText={(text) => setEmail(text)}
+      />
+      <TextInput
+        secureTextEntry={true}
+        value={password}
+        style={styles.input}
+        placeholder="Password"
+        autoCapitalize="none"
+        onChangeText={(text) => setPassword(text)}
+      />
+      {loading ? (
+        registered ? (
+          // Display a tick mark when registered is true
+          <Icon name="check" size={24} color="green" />
+        ) : (
+          // Display the activity indicator while loading
+          <ActivityIndicator size="large" color="#3a58c2" />
+        )
+      ) : (
+        // Display buttons when not loading
+        <>
+          <TouchableOpacity style={styles.button} onPress={signIn}>
+            <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={signUp}>
+            <Text style={styles.buttonText}>Create Account</Text>
+          </TouchableOpacity>
+        </>
+      )}
     </View>
   );
 };
@@ -93,15 +104,15 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     padding: 10,
     backgroundColor: '#fff',
-    width: 200, // Set a width to avoid overflow
+    width: '50%', // Adjusted to full width
   },
   button: {
     backgroundColor: '#3a58c2',
     padding: 10,
     borderRadius: 5,
-    marginVertical: 10, // Add some vertical margin
-    width: 200, // Match the width of the inputs
-    alignItems: 'center', // Center the text
+    marginVertical: 10,
+    width: '50%', // Adjusted to full width
+    alignItems: 'center',
   },
   buttonText: {
     color: 'white',
