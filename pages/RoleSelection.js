@@ -1,26 +1,24 @@
-// RoleSelection.js
-import React from 'react';
+import React from 'react'; 
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { doc, setDoc } from "firebase/firestore"; 
-import { FIREBASE_DB } from '../FirebaseConfig'; // Make sure to import your Firestore database reference
-import { FIREBASE_AUTH } from '../FirebaseConfig'; // Import your Firebase Auth reference
-
+import { FIREBASE_DB } from '../FirebaseConfig'; 
+import { FIREBASE_AUTH } from '../FirebaseConfig'; 
 const RoleSelection = ({ navigation }) => {
   const auth = FIREBASE_AUTH;
-
   const handleRoleSelection = async (role) => {
     if (!auth.currentUser) {
       console.error('No user logged in');
       return;
     }
     try {
-      // Create a reference to the user's document in the 'userProfiles' collection
-      const userDocRef = doc(FIREBASE_DB, 'userProfiles', auth.currentUser.uid);
-      // Set the 'role' field in the user's document
+      const userDocRef = doc(FIREBASE_DB, 'userProfiles', auth.currentUser.uid);     
       await setDoc(userDocRef, { role: role }, { merge: true });
       console.log('Role saved successfully');
-      // Navigate to the Home screen
-      navigation.navigate('Home');
+      if (role === 'Teacher') {
+        navigation.navigate('TeacherHome'); 
+      } else if (role === 'Student') {
+        navigation.navigate('Home'); 
+      }
     } catch (error) {
       console.error('Error saving role:', error);
     }
@@ -48,7 +46,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
     marginBottom: 20,
   },
   button: {

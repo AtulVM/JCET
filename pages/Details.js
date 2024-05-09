@@ -26,12 +26,14 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
       padding: 10,
+      paddingTop: 40,
     },
     header: {
       flexDirection: 'row',
       justifyContent: 'space-between', // Add this line
       alignItems: 'center',
       marginBottom: 20,
+      
     },
     backButton: {
       marginRight: 10,
@@ -40,6 +42,7 @@ const styles = StyleSheet.create({
     title: {
       fontSize: 24,
       fontWeight: 'bold',
+      paddingTop: 30,
     },
     header: {
       fontSize: 20,

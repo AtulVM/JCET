@@ -1,29 +1,44 @@
-// Announcements.js
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native'; // Import useNavigation
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { getDatabase, ref, onValue } from "firebase/database";
 
-const Announcements = () => {
-  const navigation = useNavigation(); // Get the navigation object
+const Announcements = ({ teacherId }) => {
+  const [announcements, setAnnouncements] = useState([]);
+
+  useEffect(() => {
+    const db = getDatabase();
+    const announcementsRef = ref(db, 'announcements');
+    onValue(announcementsRef, (snapshot) => {
+      const data = snapshot.val();
+      // Filter announcements by teacher ID
+      const filteredAnnouncements = Object.values(data).filter(announcement => announcement.teacherId === teacherId);
+      setAnnouncements(filteredAnnouncements);
+    });
+  }, [teacherId]);
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Text style={styles.backButton}>Back</Text>
-      </TouchableOpacity>
-      <Text>This is the Announcements component</Text>
-    </View>
+    <ScrollView style={styles.container}>
+      {announcements.map((announcement, index) => (
+        <View key={index} style={styles.announcementContainer}>
+          <Text style={styles.announcementText}>{announcement.text}</Text>
+          {/* Display PDF if available */}
+        </View>
+      ))}
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 50, // Add padding at the top
-    alignItems: 'center',
   },
-  backButton: {
-    marginBottom: 20, // Add some margin at the bottom
+  announcementContainer: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: 'gray',
+  },
+  announcementText: {
+    fontSize: 16,
   },
 });
 

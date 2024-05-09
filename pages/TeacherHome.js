@@ -1,10 +1,10 @@
-// Home.js
+// TeacherHome.js
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { signOut } from "firebase/auth"; 
 import { FIREBASE_AUTH } from '../FirebaseConfig'; 
 
-const Home = ({ navigation }) => {
+const TeacherHome = ({ navigation }) => {
   const auth = FIREBASE_AUTH;
 
   const handleSignOut = async () => {
@@ -23,8 +23,8 @@ const Home = ({ navigation }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>JCET COMPANION</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('S_profile')}>
-          <Text style={styles.aboutButton}>PROFILE</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('T_Profile')}>
+          <Text style={styles.aboutButton}>TEACHER</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Details')}>
           <Text style={styles.aboutButton}>ABOUT</Text>
@@ -33,19 +33,13 @@ const Home = ({ navigation }) => {
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Announcements')}>
         <Text style={styles.buttonText}>Announcements</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('LeaveNotifier')}>
-        <Text style={styles.buttonText}>Leave Notifier</Text>
-      </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Library')}>
         <Text style={styles.buttonText}>Library</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Assignments')}>
         <Text style={styles.buttonText}>Assignments</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('FeePayment')}>
-        <Text style={styles.buttonText}>Fee Payment</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Calendar')}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CalendarPage')}>
         <Text style={styles.buttonText}>Calendar</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('TodoList')}>

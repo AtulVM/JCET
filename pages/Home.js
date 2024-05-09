@@ -24,7 +24,7 @@ const Home = ({ navigation }) => {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>JCET COMPANION</Text>
         <TouchableOpacity onPress={() => navigation.navigate('S_profile')}>
-          <Text style={styles.aboutButton}>PROFILE</Text>
+          <Text style={styles.aboutButton}>STUDENT</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Details')}>
           <Text style={styles.aboutButton}>ABOUT</Text>
@@ -45,7 +45,7 @@ const Home = ({ navigation }) => {
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('FeePayment')}>
         <Text style={styles.buttonText}>Fee Payment</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Calendar')}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CalendarPage')}>
         <Text style={styles.buttonText}>Calendar</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('TodoList')}>
