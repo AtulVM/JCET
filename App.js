@@ -18,6 +18,7 @@ import S_Profile from './pages/S_profile';
 import RoleSelection from './pages/RoleSelection';
 import TeacherHome from './pages/TeacherHome';
 import T_Profile from './pages/T_Profile';
+import L_Requests from './pages/L_Requests';
 
 const Stack = createStackNavigator();
 
@@ -39,6 +40,7 @@ const App = () => {
         <Stack.Screen name="S_profile" component={S_Profile} />
         <Stack.Screen name="RoleSelection" component={RoleSelection}/>
         <Stack.Screen name="T_Profile" component={T_Profile}/>
+        <Stack.Screen name="L_Requests" component={L_Requests}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

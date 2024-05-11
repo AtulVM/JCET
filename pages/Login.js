@@ -1,45 +1,40 @@
-// Login.js
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { FIREBASE_AUTH, FIREBASE_DB } from '../FirebaseConfig'; // Import your Firebase Auth reference
+import { FIREBASE_AUTH, FIREBASE_DB } from '../FirebaseConfig';
 import { useNavigation } from '@react-navigation/native'; 
 import { CommonActions } from '@react-navigation/native';
-import { doc, getDoc } from "firebase/firestore";
-import Icon from 'react-native-vector-icons/FontAwesome'; // Import the Icon component
+import { doc,setDoc, getDoc } from "firebase/firestore";
+import Icon from 'react-native-vector-icons/FontAwesome'; 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [registered, setRegistered] = useState(false);
   const auth = FIREBASE_AUTH;
-  const navigation = useNavigation(); // Get the navigation object
+  const navigation = useNavigation(); 
 
   const signIn = async () => {
     setLoading(true);
     try {
       const response = await signInWithEmailAndPassword(auth, email, password);
       console.log(response);
-  
-      // Fetch the user's role from Firestore after successful sign-in
       const userDocRef = doc(FIREBASE_DB, 'userProfiles', response.user.uid);
       const userDocSnap = await getDoc(userDocRef);
-  
       if (userDocSnap.exists()) {
         const userData = userDocSnap.data();
-        // Check the user's role and navigate to the corresponding component
         if (userData.role === 'Teacher') {
           navigation.navigate('TeacherHome');
         } else if (userData.role === 'Student') {
           navigation.navigate('Home');
         } else {
-          // Handle case where role is not set or is set to something else
+          
           console.error('No valid role found for user');
-          // Optionally navigate to RoleSelection or show an error
+          
         }
       } else {
         console.error('No user profile found in Firestore');
-        // Handle case where user profile does not exist
+        
       }
     } catch (error) {
       console.log(error);
@@ -55,6 +50,9 @@ const Login = () => {
     try {
       const response = await createUserWithEmailAndPassword(auth, email, password);
       console.log(response);
+      const userDocRef = doc(FIREBASE_DB, 'userProfiles', response.user.uid);
+      await setDoc(userDocRef, { email: email }, { merge: true });
+      console.log('User email saved successfully');
       setRegistered(true); // Set registered to true upon successful registration
       setTimeout(() => {
         navigation.navigate('RoleSelection');

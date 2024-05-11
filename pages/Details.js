@@ -18,6 +18,8 @@ const Details = ({ navigation }) => {
       <Text style={styles.text}>JCET Companion provides a central platform for students to access all the information and resources they need.</Text>
       <Text style={styles.header}>Promotes efficiency and engagement:</Text>
       <Text style={styles.text}>JCET Companion helps students to stay organized and on top of their tasks, while also ensuring that everyone within the institution is consistently up to date. This leads to improved efficiency, productivity, and overall engagement.</Text>
+      <Text style={styles.text}>JCET Companion is the combined effort of four students Ajith A, Aswin A R, Atul v & Kishor P K</Text>
+
     </ScrollView>
   );
 };

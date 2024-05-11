@@ -1,119 +1,92 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, SafeAreaView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { getDatabase, ref, set } from "firebase/database";
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { doc, getDoc, setDoc } from "firebase/firestore"; 
+import { FIREBASE_DB, FIREBASE_AUTH } from '../FirebaseConfig'; 
 
 const S_Profile = () => {
-  const navigation = useNavigation();
   const [teacherId, setTeacherId] = useState('');
-  const auth = getAuth();
-  const user = auth.currentUser;
-  const db = getDatabase();
+  const [teacherEmail, setTeacherEmail] = useState('');
 
-  // Function to handle the submission of the teacher ID
-  const handleTeacherIdSubmit = () => {
-    if (user) {
-      // Path where the teacher ID is stored in the user's profile
-      const teacherIdRef = ref(db, `users/${user.uid}/teacherId`);
-      set(teacherIdRef, teacherId)
-        .then(() => {
-          console.log('Teacher ID saved successfully!');
-          // Navigate to the announcements page or perform other actions
-        })
-        .catch((error) => {
-          console.error('Error saving teacher ID:', error);
-        });
+  useEffect(() => {
+    const fetchTeacherEmail = async () => {
+      // Get the current user's ID
+      const currentUserId = FIREBASE_AUTH.currentUser.uid;
+
+      // Fetch the current user's Firestore document
+      const currentUserDocRef = doc(FIREBASE_DB, 'userProfiles', currentUserId);
+      const docSnap = await getDoc(currentUserDocRef);
+
+      if (docSnap.exists() && docSnap.data()['teacher-mail']) {
+        setTeacherEmail(docSnap.data()['teacher-mail']);
+      }
+    };
+
+    fetchTeacherEmail();
+  }, []);
+
+  const handleFetchEmail = async () => {
+    try {
+      const docRef = doc(FIREBASE_DB, 'userProfiles', teacherId);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const email = docSnap.data().email;
+        setTeacherEmail(email);
+
+        // Save the email to the current user's Firestore document
+        const currentUserId = FIREBASE_AUTH.currentUser.uid;
+        const currentUserDocRef = doc(FIREBASE_DB, 'userProfiles', currentUserId);
+        await setDoc(currentUserDocRef, { 'teacher-mail': email }, { merge: true });
+        console.log('Teacher email saved successfully');
+      } else {
+        console.log('No such document!');
+      }
+    } catch (error) {
+      console.error('Error fetching and saving teacher email:', error);
     }
   };
 
-  // Listen for changes in the authentication state
-  onAuthStateChanged(auth, (currentUser) => {
-    if (currentUser) {
-      // User is signed in
-      const teacherIdRef = ref(db, `users/${currentUser.uid}/teacherId`);
-      // Retrieve the teacher ID if it's already set
-      set(ref(db, teacherIdRef), (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          setTeacherId(data);
-        }
-      });
-    } else {
-      // User is signed out
-      // Handle user sign-out if necessary
-    }
-  });
-
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      {/* Header with Back Button */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.backButton}>Back</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Teacher ID Input */}
-      <View style={styles.container}>
-        <Text style={styles.userIdText}>
-          Enter TEACHER ID : 
-
-        </Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={setTeacherId}
-          value={teacherId}
-          placeholder="Type the teacher ID here"
-        />
-        <TouchableOpacity style={styles.submitButton} onPress={handleTeacherIdSubmit}>
-          <Text style={styles.submitButtonText}>Submit</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+    <View style={styles.container}>
+      {!teacherEmail && (
+        <>
+          <Text style={styles.title}>Enter Teacher ID</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setTeacherId}
+            value={teacherId}
+            placeholder="Enter Teacher ID"
+          />
+          <Button title="Fetch Email" onPress={handleFetchEmail} />
+        </>
+      )}
+      {teacherEmail && <Text style={styles.email}>Teacher's Email: {teacherEmail}</Text>}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  header: {
-    height: 50,
-    width: '100%',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    flexDirection: 'row',
-    paddingLeft: 10,
-  },
-  backButton: {
-    fontSize: 18,
-    color: '#0000ff',
-    paddingTop: 30,
-  },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    flexDirection: 'row',
-    padding: 10,
+    backgroundColor: '#fff',
   },
-  userIdText: {
-    fontSize: 16,
-    marginRight: 10,
+  title: {
+    fontSize: 24,
+    marginBottom: 20,
   },
   input: {
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
+    width: 200,
+    marginBottom: 20,
     padding: 10,
-    marginRight: 10,
   },
-  submitButton: {
-    backgroundColor: '#3a58c2',
-    padding: 10,
-    borderRadius: 5,
-  },
-  submitButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+  email: {
+    marginTop: 20,
+    fontSize: 18,
   },
 });
 

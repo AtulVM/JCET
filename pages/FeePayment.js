@@ -1,71 +1,106 @@
-// FeePayment.js
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, StyleSheet, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Button, StyleSheet, Alert, Clipboard } from 'react-native';
+import { doc, getDoc } from "firebase/firestore"; 
+import { FIREBASE_DB, FIREBASE_AUTH } from '../FirebaseConfig'; 
 
 const FeePayment = ({ navigation }) => {
+  const [role, setRole] = useState('');
+  const [upiId, setUpiId] = useState('');
   const [amount, setAmount] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isPaymentCompleted, setIsPaymentCompleted] = useState(false);
-  const [isPinEntryVisible, setIsPinEntryVisible] = useState(false);
-  const [pin, setPin] = useState('');
+  const [countdown, setCountdown] = useState(null);
+  const [timerId, setTimerId] = useState(null);
 
-  const handleConfirmPayment = () => {
-    setIsPinEntryVisible(true);
+  useEffect(() => {
+    const currentUserId = FIREBASE_AUTH.currentUser.uid;
+    const fetchRole = async () => {
+      const docRef = doc(FIREBASE_DB, 'userProfiles', currentUserId);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        setRole(docSnap.data().role);
+      } else {
+        Alert.alert('Error', 'User profile not found.');
+      }
+    };
+
+    fetchRole();
+
+    Alert.alert(
+      'Google Pay Transaction',
+      'Have you already made a transaction with the college on Google Pay?',
+      [
+        { text: 'Yes', onPress: () => {
+          Alert.alert('Redirecting to Google Pay...');
+          navigation.goBack();
+        }},
+        { text: 'No', onPress: () => {
+          Alert.alert(
+            'Bank Details',
+            'Please use the following bank details for the transaction:',
+            [
+              { text: 'Copy Account Number', onPress: () => handleCopyAccountDetails('123456789012') },
+              { text: 'Copy IFSC Code', onPress: () => handleCopyAccountDetails('COPA0001234') },
+              { text: 'Cancel', style: 'cancel' },
+            ],
+            { cancelable: true }
+          );
+        }},
+      ],
+      { cancelable: false }
+    );
+  }, []);
+
+  const handleCopyAccountDetails = (details) => {
+    Clipboard.setString(details);
+    Alert.alert('Copied!', `The ${details.includes('123456789012') ? 'Account Number' : 'IFSC Code'} has been copied to your clipboard.`);
   };
 
-  const handlePinSubmit = () => {
-    if (pin === '1234') {
-      setIsLoading(true);
-      setTimeout(() => {
-        setIsLoading(false);
-        setIsPaymentCompleted(true);
-        setIsPinEntryVisible(false);
-      }, 2000); // Simulate a delay for the payment process
-    } else {
-      Alert.alert('Error', 'Incorrect PIN. Please try again.');
-      setPin('');
-    }
+  const handlePayment = () => {
+    console.log('Verifying UPI ID...');
+    const endTime = Date.now() + 300000; // 5 minutes from now
+    const id = setInterval(() => {
+      const remainingTime = endTime - Date.now();
+      if (remainingTime <= 0) {
+        clearInterval(id);
+        setCountdown('00:00');
+      } else {
+        const minutes = Math.floor(remainingTime / 60000);
+        const seconds = Math.floor((remainingTime % 60000) / 1000);
+        setCountdown(`${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+      }
+    }, 1000);
+    setTimerId(id);
+  };
+
+  const handleStopPayment = () => {
+    clearInterval(timerId);
+    setCountdown(null);
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-          <Text style={styles.backButton}>Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Fee Payment</Text>
-      </View>
+      <Text style={styles.title}>JAWAHARLAL COLLEGE OF ENGINEERING & TECHNOLOGY</Text>
       <TextInput
         style={styles.input}
-        value={amount}
+        onChangeText={setUpiId}
+        value={upiId}
+        placeholder="Enter your UPI ID"
+      />
+      <TextInput
+        style={styles.input}
         onChangeText={setAmount}
-        placeholder="Enter amount"
+        value={amount}
+        placeholder="Enter the amount to be paid"
         keyboardType="numeric"
       />
-      <Text style={styles.text}>Payment Method: UPI</Text>
-      <TouchableOpacity style={styles.button} onPress={handleConfirmPayment} disabled={isLoading}>
-        <Text style={styles.buttonText}>Confirm Payment</Text>
-      </TouchableOpacity>
-      {isPinEntryVisible && (
+      <Button title="Pay" onPress={handlePayment} />
+      {countdown && (
         <View>
-          <TextInput
-            style={styles.input}
-            value={pin}
-            onChangeText={setPin}
-            placeholder="Enter PIN"
-            keyboardType="numeric"
-            secureTextEntry
-          />
-          <TouchableOpacity style={styles.button} onPress={handlePinSubmit}>
-            <Text style={styles.buttonText}>Submit PIN</Text>
-          </TouchableOpacity>
+          <Text>Payment request has been sent to the user.</Text>
+          <Text>{countdown}</Text>
+          <Button title="Stop Payment" onPress={handleStopPayment} />
         </View>
       )}
-      {isLoading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : isPaymentCompleted ? (
-        <Text style={styles.success}>✔ Payment Completed</Text>
-      ) : null}
     </View>
   );
 };
@@ -73,49 +108,21 @@ const FeePayment = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-start', // Align items to the top
-    padding: 10,
-  },
-  header: {
-    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 24,
     marginBottom: 20,
-  },
-  backButton: {
-    marginRight: 10,
-    color: '#3a58c2',
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
   },
   input: {
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
-    marginTop: 10,
-    paddingHorizontal: 10,
-  },
-  text: {
-    fontSize: 16,
-    marginTop: 10,
-  },
-  button: {
-    backgroundColor: '#3a58c2',
+    width: 200,
+    marginBottom: 20,
     padding: 10,
-    borderRadius: 5,
-    marginVertical: 10,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  success: {
-    color: 'green',
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginTop: 10,
   },
 });
 

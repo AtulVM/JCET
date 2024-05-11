@@ -33,6 +33,9 @@ const TeacherHome = ({ navigation }) => {
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Announcements')}>
         <Text style={styles.buttonText}>Announcements</Text>
       </TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('L_Requests')}>
+        <Text style={styles.buttonText}>Leave Requests</Text>
+      </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Library')}>
         <Text style={styles.buttonText}>Library</Text>
       </TouchableOpacity>

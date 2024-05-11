@@ -23,7 +23,7 @@ const CalendarPage = ({ navigation }) => {
       Alert.alert('On this day:', markedDates[day.dateString].note);
     }
   };
-
+  
   const handleAddEvent = () => {
     if (selectedDate && eventText) {
       setMarkedDates({

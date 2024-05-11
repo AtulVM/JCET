@@ -1,44 +1,100 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { getDatabase, ref, onValue } from "firebase/database";
+import { View, Text, TextInput, Button, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { doc, getDoc, addDoc, collection, onSnapshot, query, where } from "firebase/firestore"; 
+import { FIREBASE_DB, FIREBASE_AUTH } from '../FirebaseConfig'; 
 
-const Announcements = ({ teacherId }) => {
-  const [announcements, setAnnouncements] = useState([]);
+const Announcements = () => {
+  const [role, setRole] = useState('');
+  const [teacherEmail, setTeacherEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    const db = getDatabase();
-    const announcementsRef = ref(db, 'announcements');
-    onValue(announcementsRef, (snapshot) => {
-      const data = snapshot.val();
-      // Filter announcements by teacher ID
-      const filteredAnnouncements = Object.values(data).filter(announcement => announcement.teacherId === teacherId);
-      setAnnouncements(filteredAnnouncements);
+    // Get the current user's ID
+    const currentUserId = FIREBASE_AUTH.currentUser.uid;
+
+    // Fetch the current user's Firestore document
+    const fetchRoleAndTeacherEmail = async () => {
+      const docRef = doc(FIREBASE_DB, 'userProfiles', currentUserId);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        setRole(docSnap.data().role);
+        setTeacherEmail(docSnap.data()['teacher-mail']);
+      }
+    };
+
+    fetchRoleAndTeacherEmail();
+
+    // Listen for new messages
+    const unsubscribe = onSnapshot(query(collection(FIREBASE_DB, 'announcements'), where('senderEmail', '==', teacherEmail)), (snapshot) => {
+      setMessages(snapshot.docs.map(doc => doc.data()));
     });
-  }, [teacherId]);
+
+    return unsubscribe;
+  }, [teacherEmail]);
+
+  const handleSendMessage = async () => {
+    try {
+      await addDoc(collection(FIREBASE_DB, 'announcements'), {
+        message: message,
+        senderEmail: FIREBASE_AUTH.currentUser.email,
+        timestamp: Date.now(),
+      });
+      setMessage('');
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
+  };
 
   return (
-    <ScrollView style={styles.container}>
-      {announcements.map((announcement, index) => (
-        <View key={index} style={styles.announcementContainer}>
-          <Text style={styles.announcementText}>{announcement.text}</Text>
-          {/* Display PDF if available */}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
+      <ScrollView contentContainerStyle={styles.messages}>
+        {messages.map((msg, index) => (
+          <Text key={index}>{msg.message}</Text>
+        ))}
+      </ScrollView>
+      {role === 'Teacher' && (
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            value={message}
+            onChangeText={setMessage}
+            placeholder="Enter your message"
+          />
+          <Button title="Send Message" onPress={handleSendMessage} />
         </View>
-      ))}
-    </ScrollView>
+      )}
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'flex-end',
   },
-  announcementContainer: {
+  messages: {
+    flexGrow: 1,
+    justifyContent: 'flex-end',
     padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: 'gray',
   },
-  announcementText: {
-    fontSize: 16,
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+    paddingHorizontal: 10,
+  },
+  input: {
+    flex: 1,
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginRight: 10,
+    paddingLeft: 10,
   },
 });
 
